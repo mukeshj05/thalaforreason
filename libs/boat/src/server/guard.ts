@@ -2,6 +2,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { get, omit } from 'lodash';
 import { Request, Response } from './interface';
+import { ResponseSerializer } from './serializer';
 
 @Injectable()
 export class RequestGuard implements CanActivate {
@@ -90,6 +91,7 @@ export class RequestGuard implements CanActivate {
     };
 
     request.all = all;
+    request['_responseSerializer'] = new ResponseSerializer();
     return request;
   }
 }

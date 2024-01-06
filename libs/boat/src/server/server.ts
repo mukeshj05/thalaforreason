@@ -5,8 +5,9 @@ import helmet from 'helmet';
 import * as cookieParser from 'cookie-parser';
 import { ServerOptions } from './interface';
 import { RequestGuard } from './guard';
-import { logger, maintenance } from './middlewares';
-import { HttpExceptionFilter, OtherExceptionFilter } from '../exceptions';
+import { maintenance } from './middlewares';
+import { HttpExceptionFilter } from '../exceptions';
+import { LoggerInterceptor } from '../interceptors/logger';
 
 export class Server {
   static async create(module: any, options: ServerOptions = {}) {
@@ -35,12 +36,13 @@ export class Server {
     app.useGlobalGuards(new RequestGuard());
 
     // loggin incoming requests
-    app.use(logger);
+    app.useGlobalInterceptors(new LoggerInterceptor());
+
     // checking for maintenance
     app.use(maintenance);
 
     // error handling
-    app.useGlobalFilters(new HttpExceptionFilter(), new OtherExceptionFilter());
+    app.useGlobalFilters(new HttpExceptionFilter());
 
     // global route prefix
     if (options.globalPrefix) app.setGlobalPrefix(options.globalPrefix);
